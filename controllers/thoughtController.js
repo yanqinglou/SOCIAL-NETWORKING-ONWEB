@@ -1,4 +1,4 @@
-const { Thought } = require("../models");
+const { Thought, User } = require("../models");
 
 module.exports = {
   //*get all thoughts
@@ -31,13 +31,13 @@ module.exports = {
   updateSingleThought(req, res) {
     Thought.findOneAndUpdate(
       { _id: req.params.thoughtId },
-      { $set: req.body  },
+      { $set: req.body },
       { runValidators: true, new: true }
     )
       .then((thought) =>
         !Thought
           ? res.status(404).json({ message: "No Thought with this id!" })
-          : res.json(Thought)
+          : res.json(thought)
       )
       .catch((err) => res.status(500).json(err));
   },
@@ -46,11 +46,40 @@ module.exports = {
     Thought.findOneAndDelete({ _id: req.params.thoughtId })
       .then((thought) =>
         !thought
-          ? res.status(404).json({ message: 'No Thought with that ID' })
+          ? res.status(404).json({ message: "No Thought with that ID" })
           : Thought.deleteMany({ _id: { $in: Thought.thoughts } })
       )
-      .then(() => res.json({ message: 'Thought and associated thoughts deleted!' }))
+      .then(() =>
+        res.json({ message: "Thought and associated thoughts deleted!" })
+      )
       .catch((err) => res.status(500).json(err));
-  }
+  },
+  //*create a reaction
+  createReaction(req, res) {
+    Thought.findOneAndUpdate(
+      { _id: req.params.thoughtId },
+      { $addToSet: {reactions: req.body}},
+      { runValidators: true, new: true }
+    )
+      .then((thought) =>
+        !Thought
+          ? res.status(404).json({ message: "No Thought with this id!" })
+          : res.json(thought)
+      )
+      .catch((err) => res.status(500).json(err));
+  },
+  removeReaction(req, res) {
+    Thought.findOneAndUpdate(
+      { _id: req.params.thoughtId },
+      { $pull: { reactions: { reactionId: req.params.reactionId } } },
+      { runValidators: true, new: true }
+    )
+      .then((application) =>
+        !application
+          ? res.status(404).json({ message: 'No application with this id!' })
+          : res.json(application)
+      )
+      .catch((err) => res.status(500).json(err));
+}
 
-};
+}
