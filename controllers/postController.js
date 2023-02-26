@@ -15,10 +15,10 @@ module.exports = {
       )
       .catch((err) => res.status(500).json(err));
   },
-  // create a new post
+  //* create a new user
   createPost(req, res) {
-    Post.create(req.body)
-      .then((dbPostData) => res.json(dbPostData))
+    User.create(req.body)
+      .then((userData) => res.json(dbPostData))
       .catch((err) => res.status(500).json(err));
   },
 };

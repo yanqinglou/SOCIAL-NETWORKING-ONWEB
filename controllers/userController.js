@@ -1,40 +1,44 @@
-const { Post, Comment } = require('../models');
+const { User, Thought } = require("../models");
 
 module.exports = {
-  getComments(req, res) {
-    Comment.find()
-      .then((comment) => res.json(comment))
+  //*get all users
+  getUsers(req, res) {
+    User.find()
+      .then((user) => res.json(user))
       .catch((err) => res.status(500).json(err));
   },
-  // Get a single comment
-  getSingleComment(req, res) {
-    Comment.findOne({ _id: req.params.commentId })
-      .then((comment) =>
-        !comment
-          ? res.status(404).json({ message: 'No comment found with that id' })
-          : res.json(comment)
+  //* Get a single user
+  getSingleUser(req, res) {
+    User.findOne({ _id: req.params.userId })
+      .then((user) =>
+        !user
+          ? res.status(404).json({ message: "No user is found" })
+          : res.json(user)
       )
       .catch((err) => res.status(500).json(err));
   },
-  // Create a comment
-  createComment(req, res) {
-    Comment.create(req.body)
-      .then((comment) => {
-        return Post.findOneAndUpdate(
-          { _id: req.body.postId },
-          { $push: { comments: comment._id } },
-          { new: true }
-        );
-      })
-      .then((post) =>
-        !post
-          ? res
-              .status(404)
-              .json({ message: 'comment created, but no posts with this ID' })
-          : res.json({ message: 'comment created' })
+  //* Create a user
+  createUser(req, res) {
+    User.create(req.body)
+      .then((user) =>
+        !user
+          ? res.status(404).json({ message: "No user is found" })
+          : res.json(user)
       )
-      .catch((err) => {
-        console.error(err);
-      });
+      .catch((err) => res.status(500).json(err));
+  },
+  //*update a user info
+  updateSingleUser(req, res) {
+    User.findOneAndUpdate(
+      { _id: req.params.userId },
+      { $set: req.body  },
+      { runValidators: true, new: true }
+    )
+      .then((application) =>
+        !application
+          ? res.status(404).json({ message: "No application with this id!" })
+          : res.json(application)
+      )
+      .catch((err) => res.status(500).json(err));
   },
 };
