@@ -38,8 +38,8 @@ const thoughtSchema = new Schema(
 );
 
 // Create a virtual property `commentCount` that gets the amount of comments per post
-thoughtSchema.virtual("thoughts").get(function () {
-  return this.thoughts.length;
+thoughtSchema.virtual("thoughtsLength").get(function () {
+  return this.text.length;
 });
 
 // Initialize the Comment model

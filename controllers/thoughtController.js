@@ -1,4 +1,4 @@
-const { User, Thought } = require("../models");
+const { Thought } = require("../models");
 
 module.exports = {
   //*get all thoughts
@@ -9,11 +9,11 @@ module.exports = {
   },
   //* Get a single Thought
   getSingleThought(req, res) {
-    Thought.findOne({ _id: req.params.ThoughtId })
+    Thought.findOne({ _id: req.params.thoughtId })
       .then((thought) =>
-        !Thought
+        !thought
           ? res.status(404).json({ message: "No Thought is found" })
-          : res.json(Thought)
+          : res.json(thought)
       )
       .catch((err) => res.status(500).json(err));
   },
@@ -30,7 +30,7 @@ module.exports = {
   //*update a Thought info
   updateSingleThought(req, res) {
     Thought.findOneAndUpdate(
-      { _id: req.params.ThoughtId },
+      { _id: req.params.thoughtId },
       { $set: req.body  },
       { runValidators: true, new: true }
     )
@@ -43,7 +43,7 @@ module.exports = {
   },
   //*delete a Thought
   deleteSingleThought(req, res) {
-    Thought.findOneAndDelete({ _id: req.params.ThoughtId })
+    Thought.findOneAndDelete({ _id: req.params.thoughtId })
       .then((thought) =>
         !thought
           ? res.status(404).json({ message: 'No Thought with that ID' })
@@ -51,19 +51,6 @@ module.exports = {
       )
       .then(() => res.json({ message: 'Thought and associated thoughts deleted!' }))
       .catch((err) => res.status(500).json(err));
-  },
-//*add a friend
-  addFriend(req,res){
-    Thought.findOneAndUpdate(      
-      { _id: req.params.ThoughtId },
-      { $addToSet: {friends:req.params.friendId  }},
-      { runValidators: true, new: true })
-      .then((thought) =>
-      !Thought
-        ? res.status(404).json({ message: "No Thought with this id!" })
-        : res.json(thought)
-    )
-    .catch((err) => res.status(500).json(err));
   }
 
 };
