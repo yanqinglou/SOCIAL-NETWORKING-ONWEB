@@ -69,8 +69,6 @@ module.exports = {
     .catch((err) => res.status(500).json(err));
   },
   deleteFriend(req,res){
-    console.log(req.params.userId)
-    console.log("________")
     User.findOneAndUpdate(
       {_id: req.params.userId},
       {$pull:{friends:req.params.friendId  }},
@@ -81,6 +79,6 @@ module.exports = {
         : res.json(user)
     )
     .catch((err) => res.status(500).json(err));
-  
-  }
+  },
+
 };
