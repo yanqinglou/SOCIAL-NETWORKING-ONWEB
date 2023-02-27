@@ -1,4 +1,4 @@
-const { Thought, User } = require("../models");
+const { Thought, User, Reaction } = require("../models");
 
 module.exports = {
   //*get all thoughts
@@ -20,12 +20,24 @@ module.exports = {
   //* Create a Thought
   createThought(req, res) {
     Thought.create(req.body)
-      .then((thought) =>
-        !thought
-          ? res.status(404).json({ message: "No Thought is found" })
-          : res.json(thought)
+      .then((thought) => {
+        return User.findOneAndUpdate(
+          { name: req.body.username },
+          { $addToSet: { thoughts: thought._id } },
+          { new: true }
+        );
+      })
+      .then((user) =>
+        !user
+          ? res.status(404).json({
+              message: "Thought created, but found no user with that ID",
+            })
+          : res.json("Created the thought🎉")
       )
-      .catch((err) => res.status(500).json(err));
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json(err);
+      });
   },
   //*update a Thought info
   updateSingleThought(req, res) {
@@ -58,7 +70,7 @@ module.exports = {
   createReaction(req, res) {
     Thought.findOneAndUpdate(
       { _id: req.params.thoughtId },
-      { $addToSet: {reactions: req.body}},
+      { $addToSet: { reactions: req.body } },
       { runValidators: true, new: true }
     )
       .then((thought) =>
@@ -76,10 +88,9 @@ module.exports = {
     )
       .then((application) =>
         !application
-          ? res.status(404).json({ message: 'No application with this id!' })
+          ? res.status(404).json({ message: "No application with this id!" })
           : res.json(application)
       )
       .catch((err) => res.status(500).json(err));
-}
-
-}
+  },
+};
